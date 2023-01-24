@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/john-ngo/tinyapp/issues"
   },
-  "homepage": "https://github.com/john-ngo/tinyapp#readme"
+  "homepage": "https://github.com/john-ngo/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
