@@ -14,7 +14,9 @@
     <div class="navbar-nav">
       <% if (user) { %>
         <form class="form-inline" action="/logout" method="POST">
-          <p><%= user.email %></p>
+          <p>
+            <%= user.email %>
+          </p>
           <button type="submit">Logout</button>
         </form>
       <% } else { %>
