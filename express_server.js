@@ -105,13 +105,23 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+  let userId = "";
+  const user = getUserByEmail(req.body.email);
+  if (user) {
+    if (user.password === req.body.password) {
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+    } else {
+      res.sendStatus(403);
+    }
+  } else {
+    res.sendStatus(403);
+  }
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {
