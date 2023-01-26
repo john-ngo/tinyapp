@@ -62,13 +62,21 @@ app.get("/urls/new", (req, res) => {
     user: users[req.cookies["user_id"]],
     user_id: req.cookies["user_id"]
   };
-  res.render("urls_new", templateVars);
+  if (req.cookies["user_id"]) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.post("/urls", (req, res) => {
-  const shortUrl = generateRandomString();
-  urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect(`/urls/${shortUrl}`);
+  if (req.cookies["user_id"]) {
+    const shortUrl = generateRandomString();
+    urlDatabase[shortUrl] = req.body.longURL;
+    res.redirect(`/urls/${shortUrl}`);
+  } else {
+    res.send("You are not logged in");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -83,17 +91,29 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.send("ID does not exist");
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  if (req.cookies["user_id"]) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect("/urls");
+  if (req.cookies["user_id"]) {
+    urlDatabase[req.params.id] = req.body.longURL;
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -101,7 +121,11 @@ app.get("/login", (req, res) => {
     user: users[req.cookies["user_id"]],
     user_id: req.cookies["user_id"]
   };
-  res.render("login", templateVars);
+  if (req.cookies["user_id"]) {
+    res.redirect("/urls");
+  } else {
+    res.render("login", templateVars);
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -129,6 +153,9 @@ app.get("/register", (req, res) => {
     user: users[req.cookies["user_id"]],
     user_id: req.cookies["user_id"]
   };
+  if (req.cookies["user_id"]) {
+    return res.redirect("/urls");
+  }
   res.render("register", templateVars);
 });
 
