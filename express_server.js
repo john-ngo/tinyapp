@@ -6,9 +6,17 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-function generateRandomString() {
+const generateRandomString = () => {
   return Math.random().toString(36).slice(-6);
 };
+
+const getUserByEmail = email => {
+  for (const id in users) {
+    if (users[id].email === email) {
+      return users[id];
+    }
+  }
+}
 
 const urlDatabase = {
   "b2xVn2": "https://www.lighthouselabs.ca",
@@ -108,11 +116,15 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const userId = generateRandomString();
-  users[userId] = {
-    id: userId,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.cookie("user_id", userId);
-  res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === "" || getUserByEmail(req.body.email)) {
+    res.sendStatus(400);
+  } else {
+    users[userId] = {
+      id: userId,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie("user_id", userId);
+    res.redirect("/urls");
+  }
 });
