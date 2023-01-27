@@ -1,12 +1,11 @@
+const { getUserByEmail } = require("./helpers");
 const express = require("express");
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -16,14 +15,6 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(-6);
 };
 
-const getUserByEmail = email => {
-  for (const id in users) {
-    if (users[id].email === email) {
-      return users[id];
-    }
-  }
-}
-
 const urlsForUser = id => {
   const urls = {};
   for (const uid in urlDatabase) {
@@ -32,7 +23,7 @@ const urlsForUser = id => {
     }
   }
   return urls;
-}
+};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -157,7 +148,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const user = getUserByEmail(req.body.email);
+  const user = getUserByEmail(req.body.email, users);
   if (user) {
     if (bcrypt.compareSync(req.body.password, user.password)) {
       // res.cookie("user_id", user.id);
@@ -172,7 +163,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session = null
+  req.session = null;
   res.redirect("/login");
 });
 
@@ -189,7 +180,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const userId = generateRandomString();
-  if (req.body.email === "" || req.body.password === "" || getUserByEmail(req.body.email)) {
+  if (req.body.email === "" || req.body.password === "" || getUserByEmail(req.body.email, users)) {
     res.sendStatus(400);
   } else {
     users[userId] = {
