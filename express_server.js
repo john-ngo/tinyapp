@@ -3,7 +3,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieSession({
@@ -60,7 +60,7 @@ app.listen(PORT, () => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-// req.session.user_id
+
 app.get("/urls", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
@@ -151,7 +151,6 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(req.body.email, users);
   if (user) {
     if (bcrypt.compareSync(req.body.password, user.password)) {
-      // res.cookie("user_id", user.id);
       req.session.user_id = user.id;
       res.redirect("/urls");
     } else {
@@ -188,7 +187,6 @@ app.post("/register", (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-    // res.cookie("user_id", userId);
     req.session.user_id = userId;
     res.redirect("/urls");
   }
